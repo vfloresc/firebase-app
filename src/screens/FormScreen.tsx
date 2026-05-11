@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,31 +7,25 @@ import {
   Image,
   ScrollView,
   ActivityIndicator,
-  StyleSheet,
   Alert,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { Controller, useForm } from "react-hook-form";
 import { ScreenProps } from "../navigation/typeNavigation";
 import { formStyles } from "../theme/appStyles";
 import { SpeciesFormValues } from "../types/species";
-import { FormField } from "../components/FormField";
-import { useForm } from "react-hook-form";
 
 type Props = ScreenProps<"Form">;
 
 export const FormScreen = ({ route, navigation }: Props) => {
   const id = route.params?.speciesId;
-
-  const isEditMode: boolean = id !== undefined;
-
+  const isEditMode = id !== undefined;
   const [saving, setSaving] = useState(false);
 
-  // Form state with default initial values
   const {
     control,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<SpeciesFormValues>({
     defaultValues: {
@@ -51,6 +45,7 @@ export const FormScreen = ({ route, navigation }: Props) => {
         style={formStyles.container}
         contentContainerStyle={formStyles.content}
       >
+        {/* Imagen */}
         <TouchableOpacity style={formStyles.imagePicker} onPress={() => {}}>
           <View style={formStyles.imagePlaceholder}>
             <Text style={formStyles.imagePlaceholderIcon}>📸</Text>
@@ -66,34 +61,87 @@ export const FormScreen = ({ route, navigation }: Props) => {
         </View>
 
         <View style={formStyles.form}>
-          <FormField
-            label="Nombre común *"
-            name="commonName"
-            ontrol={control}
-            rules={{ required: "El nombre común es obligatorio" }}
-            error={errors.commonName?.message}
-            placeholder="Ej: Árbol de la quina"
-          />
+          <View style={formStyles.fieldGroup}>
+            <Text style={formStyles.fieldLabel}>Nombre común *</Text>
+            <Controller
+              control={control}
+              name="commonName"
+              rules={{ required: "El nombre común es obligatorio" }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[
+                    formStyles.input,
+                    errors.commonName && formStyles.inputError,
+                  ]}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  placeholder="Ej: Árbol de la quina"
+                  placeholderTextColor="#aaa"
+                />
+              )}
+            />
+            {errors.commonName && (
+              <Text style={formStyles.errorText}>
+                {errors.commonName.message}
+              </Text>
+            )}
+          </View>
 
-          <FormField
-            label="Nombre científico *"
-            name="scientificName"
-            ontrol={control}
-            rules={{ required: "El nombre científico es obligatorio" }}
-            error={errors.scientificName?.message}
-            placeholder="Ej: Cinchona officinalis"
-            inputStyle={{ fontStyle: "italic" }}
-          />
+          <View style={formStyles.fieldGroup}>
+            <Text style={formStyles.fieldLabel}>Nombre científico *</Text>
+            <Controller
+              control={control}
+              name="scientificName"
+              rules={{ required: "El nombre científico es obligatorio" }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[
+                    formStyles.input,
+                    errors.scientificName && formStyles.inputError,
+                  ]}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  placeholder="Ej: Cinchona officinalis"
+                  placeholderTextColor="#aaa"
+                />
+              )}
+            />
+            {errors.scientificName && (
+              <Text style={formStyles.errorText}>
+                {errors.scientificName.message}
+              </Text>
+            )}
+          </View>
 
-          <FormField
-            label="Hábitat *"
-            name="habitat"
-            ontrol={control}
-            rules={{ required: "El hábitat es obligatorio" }}
-            error={errors.habitat?.message}
-            placeholder="Ej: Bosque andino, 2000-3500 msnm"
-            multiline
-          />
+          <View style={formStyles.fieldGroup}>
+            <Text style={formStyles.fieldLabel}>Hábitat *</Text>
+            <Controller
+              control={control}
+              name="habitat"
+              rules={{ required: "El hábitat es obligatorio" }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[
+                    formStyles.input,
+                    formStyles.inputMultiline,
+                    errors.habitat && formStyles.inputError,
+                  ]}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  placeholder="Ej: Bosque andino, 2000-3500 msnm"
+                  placeholderTextColor="#aaa"
+                  multiline
+                  numberOfLines={3}
+                />
+              )}
+            />
+            {errors.habitat && (
+              <Text style={formStyles.errorText}>{errors.habitat.message}</Text>
+            )}
+          </View>
         </View>
 
         <TouchableOpacity
